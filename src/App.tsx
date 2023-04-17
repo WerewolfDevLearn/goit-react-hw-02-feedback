@@ -14,10 +14,10 @@ export default class App extends Component<{}, State> {
     neutral: 0,
     bad: 0,
   };
-  updateProp = type => {
-    this.setState(prevStat => {
+  updateProp = (type: string) => {
+    this.setState<never>(prevState => {
       return {
-        [type]: prevStat[type] + 1,
+        [type]: prevState[type as keyof typeof prevState] + 1,
       };
     });
   };
