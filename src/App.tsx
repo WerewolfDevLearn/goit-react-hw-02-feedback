@@ -1,35 +1,67 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
-  )
+import { Component } from "react";
+import Section from "./Section";
+import FeedbackOptions from "./FeedbackOption/FeedbackOption";
+import Notification from "./Notification/Notification";
+import Statistics from "./Statistics/Statistics";
+interface State {
+  good: number;
+  neutral: number;
+  bad: number;
 }
+export default class App extends Component<{}, State> {
+  state = {
+    good: 0,
+    neutral: 0,
+    bad: 0,
+  };
+  updateProp = type => {
+    this.setState(prevStat => {
+      return {
+        [type]: prevStat[type] + 1,
+      };
+    });
+  };
+  // updateProp = (type: string) => {
+  //   this.setState((prevStat: State) => {
+  //     return {
+  //       [type]: prevStat[type] + 1,
+  //     };
+  //   });
+  // };
 
-export default App
+  countTotalFeedback = () => {
+    return Object.values(this.state).reduce((acc, value) => acc + value, 0);
+  };
+
+  countPositiveFeedbackPercentage = () => {
+    const { good } = this.state;
+    const ratio = Math.round((good / this.countTotalFeedback()) * 100);
+    return ratio;
+  };
+
+  render() {
+    const { good, neutral, bad } = this.state;
+    const total = this.countTotalFeedback();
+    return (
+      <>
+        <Section title='Please leave feedback'>
+          <FeedbackOptions options={this.state} onLeaveFeedback={this.updateProp} />
+        </Section>
+
+        {total === 0 ? (
+          <Notification massage={"No feedback given"} />
+        ) : (
+          <Section title='Statistics'>
+            <Statistics
+              good={good}
+              neutral={neutral}
+              bad={bad}
+              total={this.countTotalFeedback()}
+              positivePercentage={this.countPositiveFeedbackPercentage()}
+            />
+          </Section>
+        )}
+      </>
+    );
+  }
+}
