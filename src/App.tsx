@@ -4,9 +4,7 @@ import FeedbackOptions from "./FeedbackOption/FeedbackOption";
 import Notification from "./Notification/Notification";
 import Statistics from "./Statistics/Statistics";
 interface State {
-  good: number;
-  neutral: number;
-  bad: number;
+  [key: string]: number;
 }
 export default class App extends Component<{}, State> {
   state = {
@@ -15,19 +13,12 @@ export default class App extends Component<{}, State> {
     bad: 0,
   };
   updateProp = (type: string) => {
-    this.setState<never>(prevState => {
+    this.setState(prevState => {
       return {
         [type]: prevState[type as keyof typeof prevState] + 1,
       };
     });
   };
-  // updateProp = (type: string) => {
-  //   this.setState((prevStat: State) => {
-  //     return {
-  //       [type]: prevStat[type] + 1,
-  //     };
-  //   });
-  // };
 
   countTotalFeedback = () => {
     return Object.values(this.state).reduce((acc, value) => acc + value, 0);
